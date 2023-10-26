@@ -44,6 +44,7 @@ public class RoutingRequest extends ServiceRequest {
     private List<Integer> skipSegments = new ArrayList<>();
     private boolean includeCountryInfo = false;
     private double maximumSpeed;
+    private String curbside;
 
     private String responseFormat = "json";
     // Fields specific to GraphHopper GTFS
@@ -240,6 +241,13 @@ public class RoutingRequest extends ServiceRequest {
 
     public boolean isRoundTripRequest() {
         return this.coordinates.length == 1 && this.searchParameters.getRoundTripLength() > 0;
+    }
+
+    public String getCurbside() {
+        return  curbside;
+    }
+    public void setCurbside(String value){
+        curbside = value;
     }
 
     public void setSchedule(boolean schedule) {
