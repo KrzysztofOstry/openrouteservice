@@ -39,4 +39,5 @@ public interface RouteRequestParameterNames {
     String PARAM_SCHEDULE_ROWS = "schedule_rows";
     String PARAM_WALKING_TIME = "walking_time";
     String PARAM_IGNORE_TRANSFERS = "ignore_transfers";
+    String PARAM_CURBSIDE = "curbside";
 }

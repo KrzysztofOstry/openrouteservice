@@ -911,7 +911,7 @@ public class RoutingProfile {
     }
 
     public GHResponse computeRoute(double lat0, double lon0, double lat1, double lon1, WayPointBearing[] bearings,
-                                   double[] radiuses, boolean directedSegment, RouteSearchParameters searchParams, Boolean geometrySimplify)
+                                   double[] radiuses, boolean directedSegment, RouteSearchParameters searchParams, Boolean geometrySimplify, String curbside)
             throws Exception {
 
         GHResponse resp;
@@ -965,19 +965,29 @@ public class RoutingProfile {
             } else
                 throw new IllegalArgumentException("Unsupported weighting " + weightingMethod + " for profile + " + profileType);
 
-            if (flexibleMode == ProfileTools.KEY_FLEX_STATIC)
-                //Speedup order: useCH, useCore, useALT
-                // TODO Future improvement: profileNameCH is an ugly hack and is required because of the hard-coded turnCost=false for CH
-                setSpeedups(req, true, true, true, searchCntx.profileNameCH());
-
-            if (flexibleMode == ProfileTools.KEY_FLEX_PREPROCESSED) {
-                setSpeedups(req, false, optimized, true, searchCntx.profileNameCH());
+            boolean curbsidesSet = false;
+            if(curbside!= null && (curbside.equals("right") || curbside.equals("left"))){
+                curbsidesSet = true;
+            }
+            if(curbsidesSet) {
+                req.setCurbsides(Arrays.asList(curbside, curbside));    // forcing curbside following (two points so two curbside entries)
+                req.getHints().putObject(Parameters.CH.DISABLE, true);  // disabling contracted hierarchy, full edge search needed
             }
 
-            //cannot use CH or CoreALT with requests where the weighting of non-predefined edges might change
-            if (flexibleMode == ProfileTools.KEY_FLEX_FULLY)
-                setSpeedups(req, false, false, true, searchCntx.profileNameCH());
+            if(!curbsidesSet) { // speedups associated with CH only when we don't follow curbside
+                if (flexibleMode == ProfileTools.KEY_FLEX_STATIC)
+                    //Speedup order: useCH, useCore, useALT
+                    // TODO Future improvement: profileNameCH is an ugly hack and is required because of the hard-coded turnCost=false for CH
+                    setSpeedups(req, true, true, true, searchCntx.profileNameCH());
+                if (flexibleMode == ProfileTools.KEY_FLEX_PREPROCESSED) {
+                    setSpeedups(req, false, optimized, true, searchCntx.profileNameCH());
+                }
 
+                //cannot use CH or CoreALT with requests where the weighting of non-predefined edges might change
+                if (flexibleMode == ProfileTools.KEY_FLEX_FULLY)
+                    setSpeedups(req, false, false, true, searchCntx.profileNameCH());
+
+            }
             if (searchParams.isTimeDependent()) {
                 req.setAlgorithm(Parameters.Algorithms.TD_ASTAR);
 

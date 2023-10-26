@@ -137,6 +137,12 @@ public class RouteRequest extends APIRequest implements RouteRequestParameterNam
     @JsonIgnore
     private boolean hasMaximumSearchRadii = false;
 
+    @Schema(name = PARAM_CURBSIDE,
+            description = "Forces the route to stick to right/left side of the road",
+            defaultValue = "")
+    @JsonProperty(value = PARAM_CURBSIDE)
+    private String curbside;
+
     @Schema(name = PARAM_BEARINGS, description = """
             Specifies a list of pairs (bearings and deviations) to filter the segments of the road network a waypoint can snap to.
             "For example `bearings=[[45,10],[120,20]]`.
@@ -370,6 +376,10 @@ public class RouteRequest extends APIRequest implements RouteRequestParameterNam
 
     public List<List<Double>> getCoordinates() {
         return coordinates;
+    }
+
+    public String getCurbside() {
+        return curbside;
     }
 
     public void setCoordinates(List<List<Double>> coordinates) {

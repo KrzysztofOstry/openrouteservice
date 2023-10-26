@@ -204,6 +204,7 @@ public class RoutingService extends ApiService {
 
         routingRequest.setSearchParameters(params);
 
+        routingRequest.setCurbside(request.getCurbside());
         return routingRequest;
     }
 
